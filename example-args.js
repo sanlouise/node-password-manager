@@ -1,6 +1,16 @@
 // Stores all arguments passed into the program
-var argv = require('yargs').argv;
+var argv = require('yargs')
+	.command('hello', 'Greets the user', function(yargs) {
 
+		return yargs.options({
+			name: {
+				// Make name a required parameter
+				demand: true
+			}
+		});
+	})
+
+	.argv;
 // The _ stands for an array that takes arguments via the terminal
 var command = argv._[0];
 
