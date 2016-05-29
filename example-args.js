@@ -6,8 +6,9 @@ var command = argv._[0];
 
 console.log(argv);
 
-// Checks if a name exists
-if (command === 'hello' && typeof argv.name !== 'undefined') {
+if (command === 'hello' && typeof argv.name !== 'undefined' && typeof argv.lastname !== 'undefined') {
+	console.log('Hello ' + argv.name + ' ' + argv.lastname + '!');
+} else if (command === 'hello' && typeof argv.name !== 'undefined') {
 	console.log('Hello ' + argv.name + '!');
 } else if (command === 'hello') {
 	console.log('hello world');
