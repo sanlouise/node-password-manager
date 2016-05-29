@@ -4,8 +4,21 @@ console.log('Starting password manager');
 var storage = require('node-persist');
 storage.initSync();
 
-storage.setItemSync('name', 'Sandra'); //Sets the item and stores it
+// storage.setItemSync('accounts', [{
 
-var name = storage.getItemSync('name'); // This should retrieve the stored data
-console.log('Saved name is: ' + name); // This should show up in the terminal
+// 	username: "Sandra",
+// 	balance: 1000
+
+// }]); //Sets the item and stores it
+
+var accounts = storage.getItemSync('accounts'); // This should retrieve the stored data
+
+accounts.push({
+	username: 'Kelson',
+	balance: 1500
+});
+
+storage.setItemSync('accounts', accounts);
+
+console.log(accounts); // This should show up in the terminal
 
