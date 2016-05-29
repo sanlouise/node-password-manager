@@ -6,11 +6,14 @@ var argv = require('yargs')
 			name: {
 				//To make our program easier to run, shorter to type.
 				alias: 'n',
-				description: 'Please enter your first name.'
+				description: 'Please enter your first name.',
+				//Ensure that the field is a string, possible to check for length
+				type: 'string'	
 			}, 
 			lastname: {
 				alias: 'l',
-				description: 'Please enter your last name.'
+				description: 'Please enter your last name.',
+				type: 'string'
 			 }
 			// Help for this individual function
 		}).help('help');
