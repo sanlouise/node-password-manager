@@ -1,10 +1,14 @@
 // Stores all arguments passed into the program
 var argv = require('yargs').argv;
 
+// The _ stands for an array that takes arguments via the terminal
+var command = argv._[0];
+
 console.log(argv);
 
-// The _ stands for an array that takes arguments via the terminal
-// Checks teh first argument after node example-args.js   in this case "hello"
-if (argv._[0] === 'hello') {
-	console.log("hello world")
-}
+// Checks if a name exists
+if (command === 'hello' && typeof argv.name !== 'undefined') {
+	console.log('Hello ' + argv.name + '!');
+} else if (command === 'hello') {
+	console.log('hello world');
+};
