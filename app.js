@@ -3,7 +3,6 @@ var crypto = require('crypto-js');
 var storage = require('node-persist');
 
 storage.initSync();
-var accounts = [];
 
 // Stores all arguments passed into the program
 var argv = require('yargs')
@@ -130,7 +129,7 @@ if (command === 'create') {
 	try {
 		var fetchedAccount = getAccount(argv.name, argv.masterPassword);
 		if (typeof fetchedAccount === 'undefined') {
-			console.log('No account matching this username was found.');
+			console.log('No account matching this username or master password was found.');
 		} else {
 			console.log('Account found!');
 			console.log(fetchedAccount);
