@@ -12,7 +12,7 @@ var argv = require('yargs')
 			name: {
 				//To make our program easier to run, shorter to type.
 				alias: 'n',
-				description: 'Account name (for example, Facebook or Instagram.',
+				description: 'Account name (for example, Facebook or Instagram)',
 				//Ensure that the field is a string, possible to check for length
 				type: 'string'	
 			}, 
@@ -26,7 +26,7 @@ var argv = require('yargs')
 				description: 'Please enter a password.',
 				type: 'string'
 			 },
-			 // To add a user to our accounts array, one needs the master password.
+			 // To add a user to our accounts array, one needs the master password
 			 	masterPassword: {
 				alias: 'm',
 				description: 'Please enter a master password.',
@@ -36,16 +36,16 @@ var argv = require('yargs')
 		}).demand(['n', 'u', 'p', 'm']);
 	})
 
-	.command('get', 'retrieve an existing account', function (yargs) {
+	.command('get', 'Retrieve an existing account', function (yargs) {
 		return yargs.options({
 			name: {
 				//To make our program easier to run, shorter to type.
 				alias: 'n',
-				description: 'Account name (for example, Facebook or Instagram.',
+				description: 'Account name (for example, Facebook or Instagram)',
 				//Ensure that the field is a string, possible to check for length
 				type: 'string'	
 			},
-			// To retrieve a user from our accounts array, one needs the master password.
+			// To retrieve a user from our accounts array, one needs the master password
 			 	masterPassword: {
 				alias: 'm',
 				description: 'Please enter a master password.',
@@ -55,39 +55,50 @@ var argv = require('yargs')
 		}).demand(['n', 'm']);
 	})
 
-
 	// Global help function
 	.help('help')
 	.argv;
 
 var command = argv._[0];
 
+// Both getAccounts and saveAccounts functions are to get rid of redundant code in the createAccount and getAccount functions
+function getAccounts (masterPassword) {
+	// Fetch accounts
+	var encryptedAccount = storage.getItemSync('accounts');
+	// Initially assumes that the accounts array is empty
+	var accounts = [];
+	// Decrypt and check whether accounts exist
+	if (typeof encryptedAccount !== 'undefined') {
+		//Decrypt
+		var bytes = crypto.AES.decrypt(encryptedAccount, masterPassword);
+		var accounts = JSON.parse(bytes.toString(crypto.enc.Utf8));
+	} 
+	return accounts;
+}
+
+function saveAccounts (account, masterPassword) {
+	var encryptedAccount = crypto.AES.encrypt(JSON.stringify(accounts), masterPassword);
+	storage.setItemSync('accounts', encryptedAccounts);
+	return accounts;
+}
+
 
 // This function allows for new account creation.
 function createAccount (account, masterPassword) {
-	var accounts = storage.getItemSync('accounts')
-
-	// If it exists, it will return an object.
-	// If it does not exist, it will return 'undefined'.
-	if (typeof accounts === 'undefined' ) {
-
-		// Set accounts to an empty array if no objects exist.
-		accounts = [];
-	}
-
+	//Moved the details of encryption into a seperate function.
+	var accounts = getAccounts(masterPassword);
 	// New account is pushed to the array of accounts.
 	accounts.push(account);
 	// Save the new account to the accounts array.
-	storage.setItemSync('accounts', accounts);
+	saveAccounts(accounts, masterPassword);
 	return account;
 }
 
 // This function retrieves accounts.
 function getAccount (accountName, masterPassword) {
-
-	var accounts = storage.getItemSync('accounts')
+	//Moved the details of encryption into a seperate function.
+	var accounts = getAccounts(masterPassword);
 	var matchedAccount;
-
 	accounts.forEach(function (account) {
 		if (account.name === accountName) {
 			matchedAccount = account;
@@ -107,13 +118,10 @@ if (command === 'create') {
 	console.log(createdAccount);
 
 } else if (command === 'get') {
-
 	var fetchedAccount = getAccount(argv.name, argv.masterPassword);
-
 	if (typeof fetchedAccount === 'undefined') {
 		console.log('No account matching this username was found.');
 	} else {
-
 		console.log('Account found!');
 		console.log(fetchedAccount);
 	}
