@@ -1,8 +1,9 @@
-console.log('Starting password manager');
 
-// Include node persist
+var crypto = require('crypto-js');
 var storage = require('node-persist');
+
 storage.initSync();
+var accounts = [];
 
 // Stores all arguments passed into the program
 var argv = require('yargs')
@@ -31,7 +32,7 @@ var argv = require('yargs')
 				alias: 'm',
 				description: 'Please enter a master password.',
 				type: 'string'
-			 }
+			}
 		// Make account name, username, password and master password required params
 		}).demand(['n', 'u', 'p', 'm']);
 	})
@@ -50,7 +51,7 @@ var argv = require('yargs')
 				alias: 'm',
 				description: 'Please enter a master password.',
 				type: 'string'
-			 }
+			}
 
 		}).demand(['n', 'm']);
 	})
@@ -61,7 +62,7 @@ var argv = require('yargs')
 
 var command = argv._[0];
 
-// Both getAccounts and saveAccounts functions are to get rid of redundant code in the createAccount and getAccount functions
+// Both getAccounts and saveAccounts functions are to get rid of redundant code in the createAccount and getAccount functions.
 function getAccounts (masterPassword) {
 	// Fetch accounts
 	var encryptedAccount = storage.getItemSync('accounts');
@@ -71,14 +72,18 @@ function getAccounts (masterPassword) {
 	if (typeof encryptedAccount !== 'undefined') {
 		//Decrypt
 		var bytes = crypto.AES.decrypt(encryptedAccount, masterPassword);
-		var accounts = JSON.parse(bytes.toString(crypto.enc.Utf8));
+		try {
+			accounts = JSON.parse(bytes.toString(crypto.enc.Utf8));
+			} catch (e) {
+				// We don't need to do anything. The master password was incorrect, so we leave the accounts variable as an empty array.
+			}
 	} 
 	return accounts;
 }
 
 function saveAccounts (account, masterPassword) {
 	var encryptedAccount = crypto.AES.encrypt(JSON.stringify(accounts), masterPassword);
-	storage.setItemSync('accounts', encryptedAccounts);
+	storage.setItemSync('accounts', encryptedAccount.toString());
 	return accounts;
 }
 
@@ -86,7 +91,7 @@ function saveAccounts (account, masterPassword) {
 // This function allows for new account creation.
 function createAccount (account, masterPassword) {
 	//Moved the details of encryption into a seperate function.
-	var accounts = getAccounts(masterPassword);
+	accounts = getAccounts(masterPassword);
 	// New account is pushed to the array of accounts.
 	accounts.push(account);
 	// Save the new account to the accounts array.
@@ -112,7 +117,7 @@ if (command === 'create') {
 	var createdAccount = createAccount({
 		name: argv.name,
 		username: argv.username,
-		password: argv.password,
+		password: argv.password
 	}, argv.masterPassword);
 	console.log('Account created!');
 	console.log(createdAccount);
