@@ -25,9 +25,15 @@ var argv = require('yargs')
 				alias: 'p',
 				description: 'Please enter a password.',
 				type: 'string'
+			 },
+			 // To add a user to our accounts array, one needs the master password.
+			 	masterPassword: {
+				alias: 'm',
+				description: 'Please enter a master password.',
+				type: 'string'
 			 }
-		// Make account name, username and password required params
-		}).demand(['n', 'u', 'p']);
+		// Make account name, username, password and master password required params
+		}).demand(['n', 'u', 'p', 'm']);
 	})
 
 	.command('get', 'retrieve an existing account', function (yargs) {
@@ -38,9 +44,15 @@ var argv = require('yargs')
 				description: 'Account name (for example, Facebook or Instagram.',
 				//Ensure that the field is a string, possible to check for length
 				type: 'string'	
-			}
+			},
+			// To retrieve a user from our accounts array, one needs the master password.
+			 	masterPassword: {
+				alias: 'm',
+				description: 'Please enter a master password.',
+				type: 'string'
+			 }
 
-		}).demand(['n']);
+		}).demand(['n', 'm']);
 	})
 
 
@@ -52,7 +64,7 @@ var command = argv._[0];
 
 
 // This function allows for new account creation.
-function createAccount (account) {
+function createAccount (account, masterPassword) {
 	var accounts = storage.getItemSync('accounts')
 
 	// If it exists, it will return an object.
@@ -71,7 +83,7 @@ function createAccount (account) {
 }
 
 // This function retrieves accounts.
-function getAccount (accountName) {
+function getAccount (accountName, masterPassword) {
 
 	var accounts = storage.getItemSync('accounts')
 	var matchedAccount;
@@ -89,14 +101,14 @@ if (command === 'create') {
 	var createdAccount = createAccount({
 		name: argv.name,
 		username: argv.username,
-		password: argv.password
-	});
+		password: argv.password,
+	}, argv.masterPassword);
 	console.log('Account created!');
 	console.log(createdAccount);
 
 } else if (command === 'get') {
 
-	var fetchedAccount = getAccount(argv.name);
+	var fetchedAccount = getAccount(argv.name, argv.masterPassword);
 
 	if (typeof fetchedAccount === 'undefined') {
 		console.log('No account matching this username was found.');
