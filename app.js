@@ -74,9 +74,9 @@ function getAccounts (masterPassword) {
 		var bytes = crypto.AES.decrypt(encryptedAccount, masterPassword);
 		try {
 			accounts = JSON.parse(bytes.toString(crypto.enc.Utf8));
-			} catch (e) {
-				// We don't need to do anything. The master password was incorrect, so we leave the accounts variable as an empty array.
-			}
+		} catch (e) {
+			// We don't need to do anything. The master password was incorrect, so we leave the accounts variable as an empty array.
+		}
 	} 
 	return accounts;
 }
@@ -113,21 +113,29 @@ function getAccount (accountName, masterPassword) {
 }
 
 if (command === 'create') {
+	try {
 
-	var createdAccount = createAccount({
-		name: argv.name,
-		username: argv.username,
-		password: argv.password
-	}, argv.masterPassword);
-	console.log('Account created!');
-	console.log(createdAccount);
+		var createdAccount = createAccount({
+			name: argv.name,
+			username: argv.username,
+			password: argv.password
+		}, argv.masterPassword);
+		console.log('Account created!');
+		console.log(createdAccount);
+	} catch (e) {
+		console.log('Could not create this account!');
+	}
 
 } else if (command === 'get') {
-	var fetchedAccount = getAccount(argv.name, argv.masterPassword);
-	if (typeof fetchedAccount === 'undefined') {
-		console.log('No account matching this username was found.');
-	} else {
-		console.log('Account found!');
-		console.log(fetchedAccount);
+	try {
+		var fetchedAccount = getAccount(argv.name, argv.masterPassword);
+		if (typeof fetchedAccount === 'undefined') {
+			console.log('No account matching this username was found.');
+		} else {
+			console.log('Account found!');
+			console.log(fetchedAccount);
+		}
+	} catch (e) {
+		console.log('Could not retrieve this account!');
 	}
 }
